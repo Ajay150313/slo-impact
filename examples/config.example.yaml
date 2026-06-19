@@ -1,0 +1,57 @@
+# ─────────────────────────────────────────────
+# slo-impact  — example services configuration
+# ─────────────────────────────────────────────
+# Copy to services.yaml and mount into the container:
+#   SLO_IMPACT_SERVICES_CONFIG_PATH=/config/services.yaml
+#
+# For Prometheus integration, set prometheus_availability_query on each service.
+# The query must return a single scalar in the range [0, 1].
+#
+# Example query (1 - error_ratio for an HTTP service):
+#   1 - (
+#     rate(http_requests_total{status=~"5..",job="my-service"}[5m])
+#     /
+#     (rate(http_requests_total{job="my-service"}[5m]) > 0)
+#   )
+
+services:
+  - id: api-gateway
+    name: API Gateway
+    description: Public-facing API layer and rate limiting
+    slo_target: 0.9999
+    weight: 3.0
+    prometheus_availability_query: >
+      1 - (
+        rate(http_requests_total{status=~"5..",job="api-gateway"}[5m])
+        / rate(http_requests_total{job="api-gateway"}[5m])
+      )
+
+  - id: auth
+    name: Authentication Service
+    description: Token issuance and session management
+    slo_target: 0.9999
+    weight: 2.5
+
+  - id: payments
+    name: Payments API
+    description: Payment initiation and processing
+    slo_target: 0.9999
+    weight: 3.0
+
+  - id: database
+    name: Primary Database
+    description: Main relational data store
+    slo_target: 0.9999
+    weight: 3.0
+
+  - id: notifications
+    name: Notification Service
+    description: Email / SMS / push delivery
+    slo_target: 0.9990
+    weight: 1.0
+
+  - id: reporting
+    name: Reporting Service
+    description: Async report generation
+    slo_target: 0.9990
+    weight: 0.8
