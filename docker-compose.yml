@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  # ── slo-impact dashboard ─────────────────────────────────────────────────
+  slo-impact:
+    build: .
+    image: slo-impact:latest
+    container_name: slo-impact
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # ── Data source ──────────────────────────────────────────────────────
+      # Point at your real Prometheus instance to switch off demo mode.
+      # Leave commented to use built-in synthetic data.
+      # SLO_IMPACT_PROMETHEUS_URL: "http://prometheus:9090"
+      SLO_IMPACT_DEMO_MODE: "true"
+
+      # ── Server ───────────────────────────────────────────────────────────
+      SLO_IMPACT_HOST: "0.0.0.0"
+      SLO_IMPACT_PORT: "8080"
+      SLO_IMPACT_LOG_LEVEL: "info"
+
+      # ── Optional: custom services config ─────────────────────────────────
+      # SLO_IMPACT_SERVICES_CONFIG_PATH: "/config/services.yaml"
+
+    # Uncomment to mount a custom services.yaml
+    # volumes:
+    #   - ./examples/config.example.yaml:/config/services.yaml:ro
+
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ── Optional: bring your own Prometheus ─────────────────────────────────
+  # Uncomment this block and set SLO_IMPACT_PROMETHEUS_URL above.
+  #
+  # prometheus:
+  #   image: prom/prometheus:v2.51.0
+  #   container_name: prometheus
+  #   volumes:
+  #     - ./examples/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  #   ports:
+  #     - "9090:9090"
+  #   restart: unless-stopped

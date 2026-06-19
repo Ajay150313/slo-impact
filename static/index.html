@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SLO Impact — User-Impact Uptime Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <style>
+    /* ------------------------------------------------------------------ */
+    /* Reset & base                                                         */
+    /* ------------------------------------------------------------------ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #0d1117;
+      --surface:     #161b22;
+      --surface-2:   #1c2128;
+      --border:      #30363d;
+      --text:        #e6edf3;
+      --text-muted:  #8b949e;
+      --green:       #3fb950;
+      --green-dim:   #1f4d2a;
+      --red:         #f85149;
+      --yellow:      #d29922;
+      --blue:        #388bfd;
+      --font:        'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    html, body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ------------------------------------------------------------------ */
+    /* Layout                                                               */
+    /* ------------------------------------------------------------------ */
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 20px 64px;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Header                                                               */
+    /* ------------------------------------------------------------------ */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .header-left { display: flex; align-items: center; gap: 12px; }
+
+    .header h1 {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      background: var(--green-dim);
+      color: var(--green);
+      border: 1px solid rgba(63,185,80,.25);
+    }
+
+    .status-badge .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    /* Window selector */
+    .window-selector {
+      display: flex;
+      gap: 2px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px;
+    }
+
+    .window-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+
+    .window-btn:hover { background: var(--surface-2); color: var(--text); }
+    .window-btn.active { background: var(--surface-2); color: var(--text); }
+
+    /* ------------------------------------------------------------------ */
+    /* Service grid                                                         */
+    /* ------------------------------------------------------------------ */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 900px) { .services-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .services-grid { grid-template-columns: 1fr; } }
+
+    .service-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 16px 12px;
+      position: relative;
+      transition: border-color .2s;
+    }
+
+    .service-card:hover { border-color: #444d56; }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 4px;
+    }
+
+    .service-name {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-icon {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--green-dim);
+      border: 2px solid var(--green);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .status-icon svg { width: 10px; height: 10px; }
+
+    .uptime-pct {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--green);
+      margin-bottom: 2px;
+      line-height: 1;
+    }
+
+    .uptime-pct.degraded  { color: var(--yellow); }
+    .uptime-pct.critical  { color: var(--red); }
+
+    .slo-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .slo-label .slo-gap {
+      color: var(--text-muted);
+      font-size: 10px;
+    }
+
+    .slo-label .slo-gap.breach { color: var(--red); }
+
+    /* Sparkline */
+    .sparkline-wrap {
+      position: relative;
+      height: 48px;
+      margin-bottom: 8px;
+    }
+
+    .sparkline-wrap canvas { display: block; }
+
+    /* Time-range mini buttons inside card */
+    .card-time-btns {
+      display: flex;
+      gap: 2px;
+    }
+
+    .card-time-btn {
+      font-size: 10px;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px 5px;
+      border-radius: 4px;
+      transition: color .15s, background .15s;
+    }
+
+    .card-time-btn:hover { color: var(--text); background: var(--surface-2); }
+    .card-time-btn.active { color: var(--blue); }
+
+    /* ------------------------------------------------------------------ */
+    /* Impact summary panel                                                 */
+    /* ------------------------------------------------------------------ */
+    .impact-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 680px) { .impact-panel { grid-template-columns: 1fr; } }
+
+    .panel-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+
+    .panel-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    /* Uptime explained */
+    .uptime-explained p {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .uptime-explained p strong { color: var(--text); }
+
+    .formula-block {
+      margin-top: 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .formula-block .hl { color: var(--blue); }
+
+    /* Availability impact */
+    .impact-total {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .impact-time {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--red);
+    }
+
+    .impact-label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .incident-bars { display: flex; flex-direction: column; gap: 8px; }
+
+    .incident-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .incident-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .incident-name {
+      font-size: 12px;
+      color: var(--text);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .incident-duration {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .bar-track {
+      flex: 1;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 2px;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Footer tagline                                                       */
+    /* ------------------------------------------------------------------ */
+    .tagline {
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .tagline-quote {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .tagline-links {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Loading skeleton                                                     */
+    /* ------------------------------------------------------------------ */
+    .skeleton {
+      background: var(--surface);
+      border-radius: 6px;
+      animation: shimmer 1.4s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%   { opacity: .6; }
+      50%  { opacity: 1;  }
+      100% { opacity: .6; }
+    }
+
+    /* Error state */
+    .error-banner {
+      background: rgba(248,81,73,.12);
+      border: 1px solid rgba(248,81,73,.3);
+      border-radius: 8px;
+      padding: 14px 18px;
+      color: var(--red);
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    /* Last updated */
+    .last-updated {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <h1>System Status</h1>
+      <span class="status-badge" id="overall-badge">
+        <span class="dot"></span>
+        <span id="overall-text">Loading…</span>
+      </span>
+    </div>
+    <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+      <span class="last-updated" id="last-updated"></span>
+      <div class="window-selector" id="window-selector">
+        <button class="window-btn" data-window="24h">24h</button>
+        <button class="window-btn" data-window="7d">7d</button>
+        <button class="window-btn" data-window="1m">1m</button>
+        <button class="window-btn" data-window="3m">3m</button>
+        <button class="window-btn active" data-window="12m">Last 12 Months</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Error banner (hidden by default) -->
+  <div class="error-banner" id="error-banner" style="display:none;"></div>
+
+  <!-- Services grid -->
+  <div class="services-grid" id="services-grid"></div>
+
+  <!-- Impact panel -->
+  <div class="impact-panel">
+    <div class="panel-card uptime-explained">
+      <div class="panel-title">Uptime Explained</div>
+      <p>
+        <strong>User-Impact Uptime</strong> weights each incident by the fraction of
+        users actually affected and the traffic volume at the time — not just raw
+        availability.
+      </p>
+      <div class="formula-block">
+        <span class="hl">user_impact_uptime</span> = 1 &minus; (<br>
+        &nbsp;&nbsp;&Sigma; duration &times; <span class="hl">user_fraction</span> &times; <span class="hl">traffic_weight</span><br>
+        ) / window_seconds<br><br>
+        <span style="color:#555">// A 3 AM outage at 5% traffic counts far</span><br>
+        <span style="color:#555">// less than a noon outage at peak load.</span>
+      </div>
+      <p style="margin-top:10px; font-size:11px;">
+        SLO targets are evaluated against <strong>user-impact uptime</strong>,
+        not raw availability. See
+        <a href="https://github.com/Ajay150313/slo-impact" target="_blank">
+          slo-impact on GitHub
+        </a> for full methodology.
+      </p>
+    </div>
+
+    <div class="panel-card" id="impact-panel">
+      <div class="panel-title">Availability Impact</div>
+      <div class="impact-total">
+        <span class="impact-time" id="impact-time">—</span>
+        <span class="impact-label">Total Customer Impact</span>
+      </div>
+      <div class="incident-bars" id="incident-bars"></div>
+    </div>
+  </div>
+
+  <!-- Tagline -->
+  <footer class="tagline">
+    <span class="tagline-quote">
+      "If your SLO has never been breached, it isn't an SLO. It's a slogan."
+    </span>
+    <div class="tagline-links">
+      <a href="https://github.com/Ajay150313/slo-impact" target="_blank">GitHub</a>
+      <a href="https://github.com/Ajay150313/slo-burn" target="_blank">slo-burn</a>
+      <a href="https://github.com/Ajay150313/agentsre" target="_blank">agentsre</a>
+      <a href="/docs" target="_blank">API Docs</a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+/* ================================================================
+   slo-impact dashboard — vanilla JS, zero build step required
+   ================================================================ */
+
+const API_BASE = "/api/v1";
+let activeWindow = "12m";
+let sparklineCharts = {};    // { serviceId: Chart }
+let refreshTimer = null;
+
+/* ----------------------------------------------------------------
+   Boot
+   ---------------------------------------------------------------- */
+document.addEventListener("DOMContentLoaded", () => {
+  setupWindowButtons();
+  loadDashboard(activeWindow);
+
+  // Auto-refresh every 60 seconds
+  refreshTimer = setInterval(() => loadDashboard(activeWindow), 60_000);
+});
+
+/* ----------------------------------------------------------------
+   Window selector
+   ---------------------------------------------------------------- */
+function setupWindowButtons() {
+  document.getElementById("window-selector").addEventListener("click", e => {
+    const btn = e.target.closest("[data-window]");
+    if (!btn) return;
+    document.querySelectorAll(".window-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    activeWindow = btn.dataset.window;
+    loadDashboard(activeWindow);
+  });
+}
+
+/* ----------------------------------------------------------------
+   Main data fetch
+   ---------------------------------------------------------------- */
+async function loadDashboard(window) {
+  try {
+    const resp = await fetch(`${API_BASE}/dashboard?window=${window}`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    renderDashboard(data);
+    document.getElementById("error-banner").style.display = "none";
+  } catch (err) {
+    const banner = document.getElementById("error-banner");
+    banner.textContent = `Failed to load dashboard: ${err.message}`;
+    banner.style.display = "block";
+  }
+}
+
+/* ----------------------------------------------------------------
+   Render
+   ---------------------------------------------------------------- */
+function renderDashboard(data) {
+  renderHeader(data);
+  renderServiceGrid(data.services);
+  renderImpactPanel(data);
+  updateLastUpdated(data.last_updated);
+}
+
+function renderHeader(data) {
+  const text = document.getElementById("overall-text");
+  const badge = document.getElementById("overall-badge");
+  const status = data.overall_status;
+
+  if (status === "operational") {
+    text.textContent = "All Systems Operational";
+    badge.style.background = "var(--green-dim)";
+    badge.style.color = "var(--green)";
+    badge.style.borderColor = "rgba(63,185,80,.25)";
+  } else if (status === "degraded") {
+    text.textContent = "Partial Degradation";
+    badge.style.background = "rgba(210,153,34,.12)";
+    badge.style.color = "var(--yellow)";
+    badge.style.borderColor = "rgba(210,153,34,.25)";
+  } else {
+    text.textContent = "Service Disruption";
+    badge.style.background = "rgba(248,81,73,.12)";
+    badge.style.color = "var(--red)";
+    badge.style.borderColor = "rgba(248,81,73,.25)";
+  }
+}
+
+function renderServiceGrid(services) {
+  const grid = document.getElementById("services-grid");
+
+  // Destroy old charts before re-rendering
+  Object.values(sparklineCharts).forEach(c => c.destroy());
+  sparklineCharts = {};
+  grid.innerHTML = "";
+
+  services.forEach(svc => {
+    const uptime = svc.user_impact_uptime;
+    const target = svc.service.slo_target;
+    const sloBreach = uptime < target;
+    const gap = ((uptime - target) * 100).toFixed(3);
+    const gapLabel = sloBreach
+      ? `<span class="slo-gap breach">▼ ${Math.abs(+gap)}% below SLO</span>`
+      : `<span class="slo-gap">Target ${(target * 100).toFixed(2)}%</span>`;
+
+    const uptimeClass = uptime >= 0.999 ? "" : uptime >= 0.990 ? "degraded" : "critical";
+    const canvasId = `spark-${svc.service.id}`;
+    const budgetPct = Math.min(100, svc.error_budget_consumed_pct || 0);
+
+    const card = document.createElement("div");
+    card.className = "service-card";
+    card.innerHTML = `
+      <div class="card-top">
+        <span class="service-name">${escHtml(svc.service.name)}</span>
+        <div class="status-icon">${statusSvg(svc.service.current_status)}</div>
+      </div>
+      <div class="uptime-pct ${uptimeClass}">${formatPct(uptime)}</div>
+      <div class="slo-label">Uptime ${gapLabel}</div>
+      <div class="sparkline-wrap">
+        <canvas id="${canvasId}" height="48"></canvas>
+      </div>
+      <div class="card-time-btns">
+        ${["24h","7d","1m","3m","12m"].map(w =>
+          `<button class="card-time-btn${w === activeWindow ? " active" : ""}"
+                   onclick="switchCardWindow('${svc.service.id}', '${w}', this)"
+           >${w}</button>`
+        ).join("")}
+      </div>
+    `;
+    grid.appendChild(card);
+
+    // Draw sparkline after DOM is ready
+    requestAnimationFrame(() => drawSparkline(canvasId, svc.history, svc.service.id));
+  });
+}
+
+function drawSparkline(canvasId, history, serviceId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas || !history || history.length === 0) return;
+
+  const labels = history.map(p => "");
+  const rawData = history.map(p => p.raw_availability * 100);
+  const impactData = history.map(p => p.user_impact_availability * 100);
+
+  const minVal = Math.min(...impactData) - 0.02;
+  const maxVal = Math.max(...rawData) + 0.001;
+
+  if (sparklineCharts[serviceId]) sparklineCharts[serviceId].destroy();
+
+  sparklineCharts[serviceId] = new Chart(canvas, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          data: rawData,
+          borderColor: "rgba(63,185,80,0.35)",
+          backgroundColor: "rgba(63,185,80,0.04)",
+          borderWidth: 1,
+          pointRadius: 0,
+          fill: true,
+          tension: 0.3,
+        },
+        {
+          data: impactData,
+          borderColor: "rgba(63,185,80,0.9)",
+          backgroundColor: "rgba(63,185,80,0.08)",
+          borderWidth: 1.5,
+          pointRadius: 0,
+          fill: false,
+          tension: 0.3,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      scales: {
+        x: { display: false },
+        y: {
+          display: false,
+          min: Math.max(99.5, minVal),
+          max: Math.min(100.05, maxVal),
+        },
+      },
+    },
+  });
+}
+
+async function switchCardWindow(serviceId, window, btn) {
+  // Update active state on the card buttons
+  btn.closest(".service-card")
+     .querySelectorAll(".card-time-btn")
+     .forEach(b => b.classList.toggle("active", b === btn));
+
+  try {
+    const resp = await fetch(`${API_BASE}/services/${serviceId}?window=${window}`);
+    if (!resp.ok) return;
+    const svc = await resp.json();
+    const canvasId = `spark-${serviceId}`;
+    drawSparkline(canvasId, svc.history, serviceId);
+  } catch (_) {}
+}
+
+function renderImpactPanel(data) {
+  document.getElementById("impact-time").textContent =
+    formatImpactTime(data.total_customer_impact_minutes);
+
+  const barsEl = document.getElementById("incident-bars");
+  barsEl.innerHTML = "";
+
+  const maxMins = Math.max(...data.incident_categories.map(c => c.duration_minutes), 1);
+
+  data.incident_categories.forEach(cat => {
+    const pct = (cat.duration_minutes / maxMins) * 100;
+    const row = document.createElement("div");
+    row.className = "incident-row";
+    row.innerHTML = `
+      <span class="incident-dot" style="background:${cat.hex_color}"></span>
+      <span class="incident-name">${escHtml(cat.label)}</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${pct}%;background:${cat.hex_color}"></div>
+      </div>
+      <span class="incident-duration">${formatImpactTime(cat.duration_minutes)}</span>
+    `;
+    barsEl.appendChild(row);
+  });
+}
+
+function updateLastUpdated(iso) {
+  const el = document.getElementById("last-updated");
+  if (!iso) { el.textContent = ""; return; }
+  const d = new Date(iso);
+  el.textContent = `Updated ${d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+}
+
+/* ----------------------------------------------------------------
+   Formatting helpers
+   ---------------------------------------------------------------- */
+function formatPct(val) {
+  return (val * 100).toFixed(2) + "%";
+}
+
+function formatImpactTime(minutes) {
+  const h = Math.floor(minutes / 60);
+  const m = Math.round(minutes % 60);
+  return h > 0 ? `${h}h ${String(m).padStart(2, "0")}m` : `${m}m`;
+}
+
+function statusSvg(status) {
+  if (status === "operational") {
+    return `<svg viewBox="0 0 12 12" fill="none">
+      <polyline points="2,6 5,9 10,3" stroke="#3fb950" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
+  }
+  if (status === "degraded") {
+    return `<svg viewBox="0 0 12 12" fill="none">
+      <line x1="6" y1="2" x2="6" y2="7" stroke="#d29922" stroke-width="1.8" stroke-linecap="round"/>
+      <circle cx="6" cy="9.5" r="0.9" fill="#d29922"/>
+    </svg>`;
+  }
+  return `<svg viewBox="0 0 12 12" fill="none">
+    <line x1="3" y1="3" x2="9" y2="9" stroke="#f85149" stroke-width="1.8" stroke-linecap="round"/>
+    <line x1="9" y1="3" x2="3" y2="9" stroke="#f85149" stroke-width="1.8" stroke-linecap="round"/>
+  </svg>`;
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+</script>
+</body>
+</html>
