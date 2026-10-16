@@ -108,6 +108,23 @@ def calculate_service_uptime(
     )
 
 
+def remaining_slo_headroom_seconds(
+    service: Service,
+    incidents: Sequence[Incident],
+    window: WindowLabel,
+) -> float:
+    """Impact-seconds still allowed before the SLO target is missed.
+
+    A 99.99% monthly target leaves about 26 seconds of full-user,
+    peak-traffic downtime. Use this to decide whether the next change
+    is worth the remaining budget.
+    """
+    window_seconds = float(window.seconds)
+    allowed = window_seconds * (1.0 - service.slo_target)
+    used = _sum_impact_downtime(incidents, window_seconds)
+    return max(0.0, allowed - used)
+
+
 def build_dashboard(
     service_results: Sequence[ServiceUptimeResult],
     window: WindowLabel,
