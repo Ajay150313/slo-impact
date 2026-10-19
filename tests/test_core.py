@@ -82,6 +82,13 @@ def test_slo_breached_on_major_outage(service):
 # API integration tests
 # ---------------------------------------------------------------------------
 
+@pytest.fixture(autouse=True)
+async def _app_lifespan():
+    """ASGITransport does not run lifespan events; start them so the collector exists."""
+    async with app.router.lifespan_context(app):
+        yield
+
+
 @pytest.mark.asyncio
 async def test_health():
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
