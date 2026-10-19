@@ -220,6 +220,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ---
 
+## Use with AI coding agents
+
+An agent skill that teaches coding agents how to use this library is in [`skills/slo-impact/SKILL.md`](skills/slo-impact/SKILL.md).
+
 ## License
 
 [MIT](LICENSE) © Ajay Devineni
