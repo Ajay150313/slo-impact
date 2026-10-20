@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="410" viewBox="0 0 800 410" role="img" aria-label="slo-impact architecture">
+  <defs>
+    <marker id="ah" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#64748b"/>
+    </marker>
+  </defs>
+  <rect width="800" height="410" fill="#020617"/>
+  <text x="24" y="28" fill="#94a3b8" font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" letter-spacing="1.4">SLO-IMPACT ARCHITECTURE</text>
+  <rect x="40" y="48" width="720" height="56" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1.5"/><text x="400.0" y="70" text-anchor="middle" fill="#e2e8f0" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="600">Incident  ·  duration × user_fraction × traffic_weight</text><text x="400.0" y="88" text-anchor="middle" fill="#94a3b8" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11">3 AM / 5% users ≠ noon / all users</text>
+<line x1="400" y1="104" x2="400" y2="128" stroke="#64748b" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="40" y="128" width="340" height="72" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1.5"/><text x="210.0" y="150" text-anchor="middle" fill="#e2e8f0" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="600">Raw uptime</text><text x="210.0" y="168" text-anchor="middle" fill="#94a3b8" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11">(window − downtime) / window</text>
+<rect x="420" y="128" width="340" height="72" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1.5"/><text x="590.0" y="150" text-anchor="middle" fill="#e2e8f0" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="600">User-impact uptime</text><text x="590.0" y="168" text-anchor="middle" fill="#94a3b8" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11">1 − Σ impact_seconds / window</text>
+<line x1="210" y1="200" x2="210" y2="232" stroke="#64748b" stroke-width="1.6" marker-end="url(#ah)"/>
+<line x1="590" y1="200" x2="590" y2="232" stroke="#64748b" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="40" y="232" width="720" height="64" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1.5"/><text x="400.0" y="254" text-anchor="middle" fill="#e2e8f0" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="600">Dashboard  ·  24h / 7d / 1m / 3m / 12m</text><text x="400.0" y="272" text-anchor="middle" fill="#94a3b8" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11">composite + per-service, demo or Prometheus</text>
+<line x1="400" y1="296" x2="400" y2="328" stroke="#64748b" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="200" y="328" width="400" height="56" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1.5"/><text x="400.0" y="350" text-anchor="middle" fill="#e2e8f0" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="600">remaining_slo_headroom_seconds</text><text x="400.0" y="368" text-anchor="middle" fill="#94a3b8" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11">full-user peak-traffic seconds still allowed</text>
+</svg>
