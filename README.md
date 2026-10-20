@@ -22,6 +22,20 @@ When your oncall platform showed `99.99%`, did it mean your *customers* experien
 
 ---
 
+
+## Architecture
+
+![slo-impact architecture](docs/assets/architecture.svg)
+
+Raw uptime counts every minute. Impact uptime weights who was affected and whether it was peak traffic.
+
+## Demo dashboard
+
+![slo-impact demo dashboard](docs/assets/dashboard.svg)
+
+Rendered from the in-repo demo collector (synthetic banking platform, no live customer data).
+Start it with `docker-compose up` or `slo-impact` and open http://localhost:8080.
+
 ## How it works
 
 For each incident we capture two extra dimensions:

@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="744" viewBox="0 0 900 744" role="img" aria-label="slo-impact demo dashboard">
+<rect width="900" height="744" fill="#020617"/>
+<text x="28" y="36" fill="#94a3b8" font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" letter-spacing="1.6">SLO-IMPACT  ·  DEMO COLLECTOR  ·  12-MONTH WINDOW</text>
+<text x="28" y="70" fill="#e2e8f0" font-family="ui-sans-serif,system-ui,sans-serif" font-size="22" font-weight="700">User-impact uptime vs raw availability</text>
+<rect x="28" y="92" width="270" height="88" rx="10" fill="#0f172a" stroke="#334155"/>
+<text x="44" y="118" fill="#94a3b8" font-size="11" font-family="ui-sans-serif,system-ui,sans-serif">COMPOSITE IMPACT UPTIME</text>
+<text x="44" y="158" fill="#34d399" font-size="32" font-weight="700" font-family="ui-monospace,monospace">99.9977%</text>
+<rect x="314" y="92" width="270" height="88" rx="10" fill="#0f172a" stroke="#334155"/>
+<text x="330" y="118" fill="#94a3b8" font-size="11" font-family="ui-sans-serif,system-ui,sans-serif">CUSTOMER IMPACT MINUTES</text>
+<text x="330" y="158" fill="#fbbf24" font-size="32" font-weight="700" font-family="ui-monospace,monospace">121.5</text>
+<rect x="600" y="92" width="272" height="88" rx="10" fill="#0f172a" stroke="#334155"/>
+<text x="616" y="118" fill="#94a3b8" font-size="11" font-family="ui-sans-serif,system-ui,sans-serif">OVERALL STATUS</text>
+<text x="616" y="158" fill="#34d399" font-size="22" font-weight="700" font-family="ui-sans-serif,system-ui,sans-serif">OPERATIONAL</text>
+<rect x="28" y="188" width="844" height="36" rx="6" fill="#0f172a"/>
+<text x="28" y="210" fill="#64748b" font-size="11" font-family="ui-sans-serif,system-ui,sans-serif" letter-spacing="0.8">SERVICE</text>
+<text x="300" y="210" fill="#64748b" font-size="11" font-family="ui-sans-serif,system-ui,sans-serif" letter-spacing="0.8">RAW %</text>
+<text x="430" y="210" fill="#64748b" font-size="11" font-family="ui-sans-serif,system-ui,sans-serif" letter-spacing="0.8">IMPACT %</text>
+<text x="560" y="210" fill="#64748b" font-size="11" font-family="ui-sans-serif,system-ui,sans-serif" letter-spacing="0.8">SLO</text>
+<text x="680" y="210" fill="#64748b" font-size="11" font-family="ui-sans-serif,system-ui,sans-serif" letter-spacing="0.8">HEADROOM (s)</text>
+<rect x="28" y="230" width="844" height="28" fill="#0b1220"/>
+<text x="28" y="248" fill="#e2e8f0" font-size="13" font-family="ui-sans-serif,system-ui,sans-serif">Core Banking Platform</text>
+<text x="300" y="248" fill="#94a3b8" font-size="13" font-family="ui-monospace,monospace">99.9921</text>
+<text x="430" y="248" fill="#34d399" font-size="13" font-family="ui-monospace,monospace">99.9986</text>
+<text x="560" y="248" fill="#34d399" font-size="13" font-family="ui-sans-serif,system-ui,sans-serif">met</text>
+<text x="680" y="248" fill="#fbbf24" font-size="13" font-family="ui-monospace,monospace">2718</text>
+<rect x="28" y="258" width="844" height="28" fill="#0b1220"/>
+<text x="28" y="276" fill="#e2e8f0" font-size="13" font-family="ui-sans-serif,system-ui,sans-serif">Authentication Service</text>
+<text x="300" y="276" fill="#94a3b8" font-size="13" font-family="ui-monospace,monospace">99.9792</text>
+<text x="430" y="276" fill="#34d399" font-size="13" font-family="ui-monospace,monospace">99.9978</text>
+<text x="560" y="276" fill="#34d399" font-size="13" font-family="ui-sans-serif,system-ui,sans-serif">met</text>
+<text x="680" y="276" fill="#fbbf24" font-size="13" font-family="ui-monospace,monospace">2475</text>
+<rect x="28" y="286" width="844" height="28" fill="#0b1220"/>
+<text x="28" y="304" fill="#e2e8f0" font-size="13" font-family="ui-sans-serif,system-ui,sans-serif">Payments API</text>
+<text x="300" y="304" fill="#94a3b8" font-size="13" font-family="ui-monospace,monospace">99.9925</text>
+<text x="430" y="304" fill="#34d399" font-size="13" font-family="ui-monospace,monospace">99.9987</text>
+<text x="560" y="304" fill="#34d399" font-size="13" font-family="ui-sans-serif,system-ui,sans-serif">met</text>
+<text x="680" y="304" fill="#fbbf24" font-size="13" font-family="ui-monospace,monospace">2737</text>
+<rect x="28" y="314" width="844" height="28" fill="#0b1220"/>
+<text x="28" y="332" fill="#e2e8f0" font-size="13" font-family="ui-sans-serif,system-ui,sans-serif">KYC Service</text>
+<text x="300" y="332" fill="#94a3b8" font-size="13" font-family="ui-monospace,monospace">99.9624</text>
+<text x="430" y="332" fill="#34d399" font-size="13" font-family="ui-monospace,monospace">99.9944</text>
+<text x="560" y="332" fill="#34d399" font-size="13" font-family="ui-sans-serif,system-ui,sans-serif">met</text>
+<text x="680" y="332" fill="#fbbf24" font-size="13" font-family="ui-monospace,monospace">14009</text>
+<rect x="28" y="342" width="844" height="28" fill="#0b1220"/>
+<text x="28" y="360" fill="#e2e8f0" font-size="13" font-family="ui-sans-serif,system-ui,sans-serif">Transaction DB</text>
+<text x="300" y="360" fill="#94a3b8" font-size="13" font-family="ui-monospace,monospace">99.9919</text>
+<text x="430" y="360" fill="#34d399" font-size="13" font-family="ui-monospace,monospace">99.9989</text>
+<text x="560" y="360" fill="#34d399" font-size="13" font-family="ui-sans-serif,system-ui,sans-serif">met</text>
+<text x="680" y="360" fill="#fbbf24" font-size="13" font-family="ui-monospace,monospace">2793</text>
+<rect x="28" y="370" width="844" height="28" fill="#0b1220"/>
+<text x="28" y="388" fill="#e2e8f0" font-size="13" font-family="ui-sans-serif,system-ui,sans-serif">Notification Service</text>
+<text x="300" y="388" fill="#94a3b8" font-size="13" font-family="ui-monospace,monospace">99.9819</text>
+<text x="430" y="388" fill="#34d399" font-size="13" font-family="ui-monospace,monospace">99.9958</text>
+<text x="560" y="388" fill="#34d399" font-size="13" font-family="ui-sans-serif,system-ui,sans-serif">met</text>
+<text x="680" y="388" fill="#fbbf24" font-size="13" font-family="ui-monospace,monospace">30196</text>
+<rect x="28" y="398" width="844" height="28" fill="#0b1220"/>
+<text x="28" y="416" fill="#e2e8f0" font-size="13" font-family="ui-sans-serif,system-ui,sans-serif">Reporting Service</text>
+<text x="300" y="416" fill="#94a3b8" font-size="13" font-family="ui-monospace,monospace">99.9857</text>
+<text x="430" y="416" fill="#34d399" font-size="13" font-family="ui-monospace,monospace">99.9978</text>
+<text x="560" y="416" fill="#34d399" font-size="13" font-family="ui-sans-serif,system-ui,sans-serif">met</text>
+<text x="680" y="416" fill="#fbbf24" font-size="13" font-family="ui-monospace,monospace">30832</text>
+<rect x="28" y="426" width="844" height="28" fill="#0b1220"/>
+<text x="28" y="444" fill="#e2e8f0" font-size="13" font-family="ui-sans-serif,system-ui,sans-serif">File Storage</text>
+<text x="300" y="444" fill="#94a3b8" font-size="13" font-family="ui-monospace,monospace">99.9585</text>
+<text x="430" y="444" fill="#34d399" font-size="13" font-family="ui-monospace,monospace">99.9949</text>
+<text x="560" y="444" fill="#34d399" font-size="13" font-family="ui-sans-serif,system-ui,sans-serif">met</text>
+<text x="680" y="444" fill="#fbbf24" font-size="13" font-family="ui-monospace,monospace">1558</text>
+<text x="28" y="726" fill="#475569" font-size="11" font-family="ui-sans-serif,system-ui,sans-serif">Generated from the in-repo demo collector. Raw treats every minute equally; impact weights who was affected and when.</text>
+</svg>
