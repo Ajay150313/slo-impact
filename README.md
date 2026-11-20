@@ -1,5 +1,9 @@
 # slo-impact
 
+<!-- yarkr:badges:start -->
+[![Indexed on Yarkr](https://api.yarkr.com/functions/v1/api/api/v1/badges/repos/Ajay150313/slo-impact/version.svg)](https://yarkr.com/arks/ajay150313/slo-impact)
+<!-- yarkr:badges:end -->
+
 **User-impact-weighted SLO dashboard.**  
 Measure *true* 99.99% uptime by actual customer exposure — not just raw availability.
 
@@ -100,6 +104,38 @@ uvicorn slo_impact.main:app --reload --port 8080
 ```
 
 ---
+
+<!-- yarkr:install:start -->
+## Install with Yarkr
+
+This repo is indexed on [Yarkr](https://yarkr.com/arks/ajay150313/slo-impact) as the ark [ajay150313/slo-impact](https://yarkr.com/arks/ajay150313/slo-impact), so its skills install into Claude Code, Codex, Cursor and other agent harnesses with one command.
+
+### CLI
+
+Install the whole ark, which Yarkr keeps equal to this repo:
+
+```bash
+npx yarkr-cli sync ajay150313/slo-impact
+```
+
+Or add individual skills:
+
+```bash
+npx yarkr-cli add skill:ajay150313/slo-impact/slo-impact
+```
+
+No Node.js? `curl -fsSL https://yarkr.com/install.sh | sh` (macOS, Linux) or `irm https://yarkr.com/install.ps1 | iex` (Windows PowerShell) installs `yarkr` as a standalone binary; then type `yarkr` in place of `npx yarkr-cli`.
+
+### MCP
+
+Connect your agent to the ark over MCP:
+
+```bash
+npx yarkr-cli mcp add ajay150313/slo-impact
+```
+
+Or point any MCP client at `https://api.yarkr.com/functions/v1/api/mcp/o/ajay150313/slo-impact`.
+<!-- yarkr:install:end -->
 
 ## Prometheus integration
 
